@@ -19,9 +19,7 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="outline" className="w-full">
-            Login with Google
-          </Button>
+          <Button className="w-full">Login with Google</Button>
         </CardContent>
       </Card>
     </div>

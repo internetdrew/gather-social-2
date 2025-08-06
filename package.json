@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -n \"client,server\" -c \"blue,green\" \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "vite",
+    "dev:frontend": "vite --host",
     "dev:backend": "nodemon --watch 'server/*' --exec 'tsx' server/index.ts",
     "build": "tsc -b tsconfig.api.json && vite build",
     "lint": "eslint .",
