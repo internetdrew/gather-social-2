@@ -21,7 +21,7 @@ const Navbar = () => {
           <path d="M6 5v14" />
           <rect width="12" height="18" x="10" y="3" rx="2" />
         </svg>
-        Gather Social
+        Gather <span className="font-light">Social</span>
       </Link>
       <ThemeToggle />
     </nav>
