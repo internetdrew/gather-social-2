@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import path from "path";
 import compression from "compression";
 import helmet from "helmet";
+import { createServerSupabaseClient } from "./supabase";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -30,6 +31,17 @@ app.use(compression());
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
+
+app.get("/auth/callback", async function (req, res) {
+  const code = req.query.code;
+  const next = req.query.next ?? "/";
+
+  if (code) {
+    const supabase = createServerSupabaseClient(req, res);
+    await supabase.auth.exchangeCodeForSession(code as string);
+  }
+  res.redirect(303, `/${(next as string)?.slice(1)}`);
+});
 
 app.use(
   "/trpc",
