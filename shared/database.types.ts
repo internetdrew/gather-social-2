@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          created_at: string
+          date: string
+          host_id: string
+          id: string
+          title: string
+          trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          host_id: string
+          id?: string
+          title: string
+          trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          host_id?: string
+          id?: string
+          title?: string
+          trust_level?: Database["public"]["Enums"]["TRUST_LEVEL"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +49,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      TRUST_LEVEL: "LOW" | "HIGH"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +176,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      TRUST_LEVEL: ["LOW", "HIGH"],
+    },
   },
 } as const
