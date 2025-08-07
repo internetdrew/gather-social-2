@@ -8,6 +8,7 @@ import path from "path";
 import compression from "compression";
 import helmet from "helmet";
 import { createServerSupabaseClient } from "./supabase";
+import cookieParser from "cookie-parser";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -31,6 +32,7 @@ app.use(compression());
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/auth/callback", async function (req, res) {
   const code = req.query.code;
