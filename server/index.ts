@@ -9,10 +9,12 @@ import compression from "compression";
 import helmet from "helmet";
 import { createServerSupabaseClient } from "./supabase";
 import cookieParser from "cookie-parser";
+import { eventRouter } from "./routers/event";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 export const appRouter = router({
+  event: eventRouter,
   greeting: publicProcedure
     .input(z.object({ intro: z.string() }))
     .query((opts) => {
