@@ -1,7 +1,11 @@
-import React from "react";
+import NoEvents from "@/components/NoEvents";
 
 const Home = () => {
-  return <div>Home</div>;
+  return (
+    <div className="px-4">
+      <NoEvents />
+    </div>
+  );
 };
 
 export default Home;
