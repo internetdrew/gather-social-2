@@ -22,7 +22,7 @@ export const appRouter = router({
 });
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173", "https://gather-social-2.vercel.app"],
   credentials: true,
 };
 
