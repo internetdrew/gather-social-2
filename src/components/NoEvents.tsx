@@ -1,16 +1,11 @@
 import { CalendarPlus2 } from "lucide-react";
 import { Button } from "./ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import EventDetailsForm from "@/forms/EventDetailsForm";
 
-const NoEvents = () => {
+const NoEvents = ({
+  setRenderEventDialog,
+}: {
+  setRenderEventDialog: (open: boolean) => void;
+}) => {
   return (
     <>
       <div className="mt-40 flex flex-col items-center justify-center gap-4 text-center">
@@ -26,27 +21,11 @@ const NoEvents = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Create an event</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create an event</DialogTitle>
-                <DialogDescription>
-                  Once you create an event,you can activate it whenever you'd
-                  like and others will have access to it for up to 30 days.
-                </DialogDescription>
-              </DialogHeader>
-              <EventDetailsForm />
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => setRenderEventDialog(true)}>
+            Create an event
+          </Button>
         </div>
       </div>
-      {/* <AddHouseholdDialog
-        open={showAddHouseholdDialog}
-        onOpenChange={setShowAddHouseholdDialog}
-      /> */}
     </>
   );
 };
