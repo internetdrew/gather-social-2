@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_memberships: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: number
+          role: Database["public"]["Enums"]["EVENT_MEMBERSHIP_ROLE"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: number
+          role: Database["public"]["Enums"]["EVENT_MEMBERSHIP_ROLE"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: number
+          role?: Database["public"]["Enums"]["EVENT_MEMBERSHIP_ROLE"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_memberships_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string
@@ -49,6 +81,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      EVENT_MEMBERSHIP_ROLE: "ADMIN" | "GUEST"
       TRUST_LEVEL: "LOW" | "HIGH"
     }
     CompositeTypes: {
@@ -177,6 +210,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      EVENT_MEMBERSHIP_ROLE: ["ADMIN", "GUEST"],
       TRUST_LEVEL: ["LOW", "HIGH"],
     },
   },
