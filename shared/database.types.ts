@@ -14,7 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      event_memberships: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: number
+          role: Database["public"]["Enums"]["EVENT_MEMBERSHIP_ROLE"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: number
+          role: Database["public"]["Enums"]["EVENT_MEMBERSHIP_ROLE"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: number
+          role?: Database["public"]["Enums"]["EVENT_MEMBERSHIP_ROLE"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_memberships_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string
+          date: string
+          host_id: string
+          id: string
+          join_code: string
+          title: string
+          trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          host_id: string
+          id?: string
+          join_code: string
+          title: string
+          trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          host_id?: string
+          id?: string
+          join_code?: string
+          title?: string
+          trust_level?: Database["public"]["Enums"]["TRUST_LEVEL"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +84,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      EVENT_MEMBERSHIP_ROLE: "ADMIN" | "GUEST"
+      TRUST_LEVEL: "LOW" | "HIGH"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +212,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      EVENT_MEMBERSHIP_ROLE: ["ADMIN", "GUEST"],
+      TRUST_LEVEL: ["LOW", "HIGH"],
+    },
   },
 } as const
