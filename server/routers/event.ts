@@ -73,4 +73,50 @@ export const eventRouter = router({
     }
     return data;
   }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        date: z.coerce.date(),
+        trust_level: z.enum(Constants.public.Enums.TRUST_LEVEL),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { data, error } = await supabaseAdminClient
+        .from("events")
+        .update({
+          ...input,
+          date: input.date.toISOString(),
+        })
+        .eq("id", input.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+      return data;
+    }),
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      const { data, error } = await supabaseAdminClient
+        .from("events")
+        .delete()
+        .eq("id", input.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+      return data;
+    }),
 });
