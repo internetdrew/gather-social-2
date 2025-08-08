@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router";
-import { queryClient } from "../utils/trpc";
+import { queryClient } from "./utils/trpc";
 import { QueryClientProvider } from "@tanstack/react-query";
 import Home from "./routes/Home.tsx";
 import RequireSignin from "./components/RequireSignin.tsx";
