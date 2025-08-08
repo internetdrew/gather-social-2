@@ -1,6 +1,7 @@
 import Navbar from "./components/Navbar";
 import { Outlet } from "react-router";
 import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <div className="flex h-screen flex-col">
         <Navbar />
         <Outlet />
+        <Toaster />
       </div>
     </ThemeProvider>
   );
