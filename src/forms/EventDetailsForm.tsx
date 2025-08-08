@@ -58,29 +58,54 @@ const EventDetailsForm = ({
     },
   });
 
-  const myMutation = useMutation(trpc.event.create.mutationOptions());
+  const createEventMutation = useMutation(trpc.event.create.mutationOptions());
+  const updateEventMutation = useMutation(trpc.event.update.mutationOptions());
 
   const onSubmit = (values: z.infer<typeof eventDetailsSchema>) => {
-    myMutation.mutate(
-      {
-        ...values,
-        trust_level: values.trustLevel,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Event created successfully");
-          form.reset();
-          queryClient.invalidateQueries({
-            queryKey: trpc.event.list.queryKey(),
-          });
-          onSuccess();
+    if (event) {
+      updateEventMutation.mutate(
+        {
+          id: event.id,
+          ...values,
+          trust_level: values.trustLevel,
         },
-        onError: (error) => {
-          console.error(error);
-          toast.error("Failed to create event");
+        {
+          onSuccess: () => {
+            toast.success("Event updated successfully");
+            form.reset();
+            queryClient.invalidateQueries({
+              queryKey: trpc.event.list.queryKey(),
+            });
+            onSuccess();
+          },
+          onError: (error) => {
+            console.error(error);
+            toast.error("Failed to update event");
+          },
         },
-      },
-    );
+      );
+    } else {
+      createEventMutation.mutate(
+        {
+          ...values,
+          trust_level: values.trustLevel,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Event created successfully");
+            form.reset();
+            queryClient.invalidateQueries({
+              queryKey: trpc.event.list.queryKey(),
+            });
+            onSuccess();
+          },
+          onError: (error) => {
+            console.error(error);
+            toast.error("Failed to create event");
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -181,9 +206,22 @@ const EventDetailsForm = ({
             );
           }}
         />
-        <Button type="submit" disabled={myMutation.isPending}>
-          {myMutation.isPending ? "Creating event..." : "Create event"}
-        </Button>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            disabled={
+              createEventMutation.isPending ||
+              updateEventMutation.isPending ||
+              !form.formState.isDirty
+            }
+          >
+            {createEventMutation.isPending || updateEventMutation.isPending
+              ? "Saving..."
+              : event
+                ? "Update event"
+                : "Create event"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

@@ -25,10 +25,13 @@ const EventDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{event ? "Edit event" : "Create an event"}</DialogTitle>
+          <DialogTitle>
+            {event ? "Update event details" : "Create an event"}
+          </DialogTitle>
           <DialogDescription>
-            Once you create an event,you can activate it whenever you'd like and
-            others will have access to it for up to 30 days.
+            {event
+              ? "Update the details of your event."
+              : "Create an event and share the link with others to allow them to join."}
           </DialogDescription>
         </DialogHeader>
         <EventDetailsForm

@@ -5,32 +5,66 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import type { Tables } from "../../shared/database.types";
 import EventList from "@/components/EventList";
+import { Button } from "@/components/ui/button";
+import DeleteEventAlertDialog from "@/components/alert-dialogs/DeleteEventAlertDialog";
 
 const Home = () => {
   const [renderEventDialog, setRenderEventDialog] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<Tables<"events"> | null>(
-    null,
-  );
+  const [renderDeleteEventAlertDialog, setRenderDeleteEventAlertDialog] =
+    useState(false);
+  const [selectedEventForEdit, setSelectedEventForEdit] =
+    useState<Tables<"events"> | null>(null);
+  const [selectedEventForDelete, setSelectedEventForDelete] =
+    useState<Tables<"events"> | null>(null);
   const { data: events } = useQuery(trpc.event.list.queryOptions());
 
-  const handleEventClick = (event: Tables<"events">) => {
-    setSelectedEvent(event);
+  const handleEditEvent = (event: Tables<"events">) => {
+    setSelectedEventForEdit(event);
     setRenderEventDialog(true);
+  };
+
+  const handleDeleteEvent = (event: Tables<"events">) => {
+    setSelectedEventForDelete(event);
+    setRenderDeleteEventAlertDialog(true);
   };
 
   return (
     <div className="px-4">
       {events && events.length > 0 ? (
-        <EventList events={events} handleEventClick={handleEventClick} />
+        <>
+          <div className="mb-8 flex justify-end">
+            <Button
+              onClick={() => {
+                setRenderEventDialog(true);
+                setSelectedEventForEdit(null);
+              }}
+            >
+              Create event
+            </Button>
+          </div>
+          <EventList
+            events={events}
+            onEditClick={handleEditEvent}
+            onDeleteClick={handleDeleteEvent}
+          />
+        </>
       ) : (
         <NoEvents setRenderEventDialog={setRenderEventDialog} />
       )}
       <EventDialog
-        event={selectedEvent}
+        event={selectedEventForEdit}
         open={renderEventDialog}
         onOpenChange={setRenderEventDialog}
-        setSelectedEvent={setSelectedEvent}
+        setSelectedEvent={setSelectedEventForEdit}
       />
+
+      {selectedEventForDelete && (
+        <DeleteEventAlertDialog
+          event={selectedEventForDelete}
+          open={renderDeleteEventAlertDialog}
+          onOpenChange={setRenderDeleteEventAlertDialog}
+        />
+      )}
     </div>
   );
 };
