@@ -67,7 +67,7 @@ const EventCard = ({
           )}
         </div>
         <Button variant="outline" size="sm" className="text-xs">
-          Activate gallery
+          Activate
         </Button>
       </CardFooter>
     </Card>
