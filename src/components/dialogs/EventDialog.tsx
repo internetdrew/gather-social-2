@@ -32,6 +32,7 @@ const EventDialog = ({
           </DialogDescription>
         </DialogHeader>
         <EventDetailsForm
+          event={event}
           onSuccess={() => {
             onOpenChange(false);
             setSelectedEvent(null);
