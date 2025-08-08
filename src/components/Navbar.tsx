@@ -18,7 +18,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 flex w-full items-center justify-between p-4 text-center">
+    <nav className="bg-background sticky top-0 z-50 flex w-full items-center justify-between p-4 text-center">
       <Link to="/" className="font-semibold">
         <svg
           xmlns="http://www.w3.org/2000/svg"
