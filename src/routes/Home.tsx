@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import type { Tables } from "../../shared/database.types";
 import EventList from "@/components/EventList";
+import { Button } from "@/components/ui/button";
 
 const Home = () => {
   const [renderEventDialog, setRenderEventDialog] = useState(false);
@@ -21,7 +22,14 @@ const Home = () => {
   return (
     <div className="px-4">
       {events && events.length > 0 ? (
-        <EventList events={events} handleEventClick={handleEventClick} />
+        <>
+          <div className="mb-8 flex justify-end">
+            <Button onClick={() => setRenderEventDialog(true)}>
+              Create event
+            </Button>
+          </div>
+          <EventList events={events} handleEventClick={handleEventClick} />
+        </>
       ) : (
         <NoEvents setRenderEventDialog={setRenderEventDialog} />
       )}
