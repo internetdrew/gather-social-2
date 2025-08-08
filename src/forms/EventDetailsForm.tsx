@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Constants } from "../../shared/database.types.ts";
+import { Constants, type Tables } from "../../shared/database.types.ts";
 import {
   Form,
   FormControl,
@@ -22,6 +22,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { queryClient, trpc } from "@/utils/trpc";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox.tsx";
 
 const eventDetailsSchema = z.object({
   title: z.string().min(1, { message: "Please add an event title" }),
@@ -38,18 +42,45 @@ const eventDetailsSchema = z.object({
   trustLevel: z.enum(Constants.public.Enums.TRUST_LEVEL),
 });
 
-const EventDetailsForm = () => {
+const EventDetailsForm = ({
+  onSuccess,
+  event,
+}: {
+  onSuccess: () => void;
+  event?: Tables<"events"> | null;
+}) => {
   const form = useForm<z.infer<typeof eventDetailsSchema>>({
     resolver: zodResolver(eventDetailsSchema),
     defaultValues: {
-      title: "",
-      date: new Date(),
-      trustLevel: "LOW",
+      title: event?.title || "",
+      date: event?.date ? new Date(event.date) : new Date(),
+      trustLevel: event?.trust_level || "LOW",
     },
   });
 
+  const myMutation = useMutation(trpc.event.create.mutationOptions());
+
   const onSubmit = (values: z.infer<typeof eventDetailsSchema>) => {
-    console.log(values);
+    myMutation.mutate(
+      {
+        ...values,
+        trust_level: values.trustLevel,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Event created successfully");
+          form.reset();
+          queryClient.invalidateQueries({
+            queryKey: trpc.event.list.queryKey(),
+          });
+          onSuccess();
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error("Failed to create event");
+        },
+      },
+    );
   };
 
   return (
@@ -120,7 +151,39 @@ const EventDetailsForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <FormField
+          control={form.control}
+          name="trustLevel"
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormControl className="flex flex-row items-center gap-2">
+                  <div className="flex flex-row items-center gap-2">
+                    <Checkbox
+                      checked={field.value === "HIGH"}
+                      onCheckedChange={(checked) => {
+                        return checked
+                          ? field.onChange("HIGH")
+                          : field.onChange("LOW");
+                      }}
+                    />
+                    <FormLabel htmlFor="trustLevel">
+                      I know most people who will attend this event
+                    </FormLabel>
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  {field.value === "HIGH"
+                    ? "Guests can join directly with the event link and unique code. Great for events like weddings, parties, etc."
+                    : "Guests will need to sign in before they're able to submit photos. Great for events like conferences, etc."}
+                </FormDescription>
+              </FormItem>
+            );
+          }}
+        />
+        <Button type="submit" disabled={myMutation.isPending}>
+          {myMutation.isPending ? "Creating event..." : "Create event"}
+        </Button>
       </form>
     </Form>
   );
