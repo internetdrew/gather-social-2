@@ -3,10 +3,12 @@ import EventCard from "./EventCard";
 
 const EventList = ({
   events,
-  handleEventClick,
+  onEditClick,
+  onDeleteClick,
 }: {
   events: Tables<"events">[];
-  handleEventClick: (event: Tables<"events">) => void;
+  onEditClick: (event: Tables<"events">) => void;
+  onDeleteClick: (event: Tables<"events">) => void;
 }) => {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -14,7 +16,8 @@ const EventList = ({
         <EventCard
           key={event.id}
           event={event}
-          handleEventClick={handleEventClick}
+          onEditClick={onEditClick}
+          onDeleteClick={onDeleteClick}
         />
       ))}
     </div>

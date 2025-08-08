@@ -210,7 +210,9 @@ const EventDetailsForm = ({
           <Button
             type="submit"
             disabled={
-              createEventMutation.isPending || updateEventMutation.isPending
+              createEventMutation.isPending ||
+              updateEventMutation.isPending ||
+              !form.formState.isDirty
             }
           >
             {createEventMutation.isPending || updateEventMutation.isPending
