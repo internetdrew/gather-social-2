@@ -63,7 +63,7 @@ export const eventRouter = router({
       .from("events")
       .select("*")
       .eq("host_id", ctx.user.id)
-      .order("date", { ascending: false });
+      .order("date", { ascending: true });
 
     if (error) {
       throw new TRPCError({
