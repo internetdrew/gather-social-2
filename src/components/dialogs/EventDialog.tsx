@@ -1,4 +1,4 @@
-import { type Tables } from "shared/database.types";
+import { type Tables } from "../../../shared/database.types";
 import {
   Dialog,
   DialogDescription,
