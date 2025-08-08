@@ -52,6 +52,7 @@ export type Database = {
           date: string
           host_id: string
           id: string
+          join_code: string
           title: string
           trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
@@ -60,6 +61,7 @@ export type Database = {
           date: string
           host_id: string
           id?: string
+          join_code: string
           title: string
           trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
@@ -68,6 +70,7 @@ export type Database = {
           date?: string
           host_id?: string
           id?: string
+          join_code?: string
           title?: string
           trust_level?: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
