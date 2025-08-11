@@ -3,7 +3,6 @@ import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Constants } from "../../shared/database.types";
 import { supabaseAdminClient } from "../supabase";
-import { nanoid } from "nanoid";
 
 export const eventRouter = router({
   create: protectedProcedure
@@ -22,7 +21,6 @@ export const eventRouter = router({
           trust_level: input.trust_level,
           date: input.date.toISOString(),
           host_id: ctx.user.id,
-          join_code: nanoid(8),
         })
         .select()
         .single();
