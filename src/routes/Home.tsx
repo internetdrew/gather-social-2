@@ -7,6 +7,7 @@ import type { Tables } from "../../shared/database.types";
 import EventList from "@/components/EventList";
 import { Button } from "@/components/ui/button";
 import DeleteEventAlertDialog from "@/components/alert-dialogs/DeleteEventAlertDialog";
+import EventListSkeleton from "@/components/skeleton-ui/EventListSkeleton";
 
 const Home = () => {
   const [renderEventDialog, setRenderEventDialog] = useState(false);
@@ -16,7 +17,12 @@ const Home = () => {
     useState<Tables<"events"> | null>(null);
   const [selectedEventForDelete, setSelectedEventForDelete] =
     useState<Tables<"events"> | null>(null);
-  const { data: events } = useQuery(trpc.event.list.queryOptions());
+
+  const {
+    data: events,
+    isLoading: eventListLoading,
+    isRefetching: eventListRefetching,
+  } = useQuery(trpc.event.list.queryOptions());
 
   const handleEditEvent = (event: Tables<"events">) => {
     setSelectedEventForEdit(event);
@@ -28,11 +34,16 @@ const Home = () => {
     setRenderDeleteEventAlertDialog(true);
   };
 
+  if (eventListLoading || eventListRefetching) {
+    return <EventListSkeleton />;
+  }
+
   return (
     <div className="px-4">
       {events && events.length > 0 ? (
         <>
-          <div className="mb-8 flex justify-end">
+          <div className="mb-8 flex justify-between gap-2 sm:justify-end">
+            <Button variant="outline">Buy Event Credits</Button>
             <Button
               onClick={() => {
                 setRenderEventDialog(true);
