@@ -48,29 +48,38 @@ export type Database = {
       }
       events: {
         Row: {
+          activated_at: string | null
           created_at: string
           date: string
+          expires_at: string | null
           host_id: string
           id: string
-          join_code: string
+          join_code: string | null
+          status: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title: string
           trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
         Insert: {
+          activated_at?: string | null
           created_at?: string
           date: string
+          expires_at?: string | null
           host_id: string
           id?: string
-          join_code: string
+          join_code?: string | null
+          status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title: string
           trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
         Update: {
+          activated_at?: string | null
           created_at?: string
           date?: string
+          expires_at?: string | null
           host_id?: string
           id?: string
-          join_code?: string
+          join_code?: string | null
+          status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title?: string
           trust_level?: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
@@ -112,6 +121,7 @@ export type Database = {
     }
     Enums: {
       EVENT_MEMBERSHIP_ROLE: "ADMIN" | "GUEST"
+      EVENT_STATUS: "DRAFT" | "ACTIVE" | "EXPIRED"
       TRUST_LEVEL: "LOW" | "HIGH"
     }
     CompositeTypes: {
@@ -241,6 +251,7 @@ export const Constants = {
   public: {
     Enums: {
       EVENT_MEMBERSHIP_ROLE: ["ADMIN", "GUEST"],
+      EVENT_STATUS: ["DRAFT", "ACTIVE", "EXPIRED"],
       TRUST_LEVEL: ["LOW", "HIGH"],
     },
   },
