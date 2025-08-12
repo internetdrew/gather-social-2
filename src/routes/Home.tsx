@@ -1,18 +1,20 @@
 import EventDialog from "@/components/dialogs/EventDialog";
 import NoEvents from "@/components/NoEvents";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import type { Tables } from "../../shared/database.types";
 import EventList from "@/components/EventList";
 import { Button } from "@/components/ui/button";
 import DeleteEventAlertDialog from "@/components/alert-dialogs/DeleteEventAlertDialog";
 import EventListSkeleton from "@/components/skeleton-ui/EventListSkeleton";
+import { toast } from "sonner";
 
 const Home = () => {
   const [renderEventDialog, setRenderEventDialog] = useState(false);
   const [renderDeleteEventAlertDialog, setRenderDeleteEventAlertDialog] =
     useState(false);
+  const [startingCheckout, setStartingCheckout] = useState(false);
   const [selectedEventForEdit, setSelectedEventForEdit] =
     useState<Tables<"events"> | null>(null);
   const [selectedEventForDelete, setSelectedEventForDelete] =
@@ -34,7 +36,29 @@ const Home = () => {
     setRenderDeleteEventAlertDialog(true);
   };
 
-  if (eventListLoading || eventListRefetching) {
+  const checkoutSessionQuery = useMutation(
+    trpc.checkout.createCheckoutSession.mutationOptions(),
+  );
+
+  const createCheckoutSession = () => {
+    setStartingCheckout(true);
+    checkoutSessionQuery.mutateAsync(undefined, {
+      onSuccess: (data) => {
+        if (data) {
+          window.location.href = data;
+        }
+      },
+      onError: (error) => {
+        setStartingCheckout(false);
+        toast.error(error.message);
+      },
+    });
+  };
+
+  if (
+    eventListLoading ||
+    (events && events.length === 0 && eventListRefetching)
+  ) {
     return <EventListSkeleton />;
   }
 
@@ -43,7 +67,9 @@ const Home = () => {
       {events && events.length > 0 ? (
         <>
           <div className="mb-8 flex justify-between gap-2 sm:justify-end">
-            <Button variant="outline">Buy Event Credits</Button>
+            <Button variant="outline" onClick={createCheckoutSession}>
+              {startingCheckout ? "Starting checkout..." : "Buy Event Credits"}
+            </Button>
             <Button
               onClick={() => {
                 setRenderEventDialog(true);
