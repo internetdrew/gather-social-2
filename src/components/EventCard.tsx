@@ -34,6 +34,8 @@ const EventCard = ({
     trpc.credit.fetchUserCredits.queryOptions(),
   );
 
+  console.log(userCredits);
+
   return (
     <Card>
       <CardHeader>
@@ -82,7 +84,7 @@ const EventCard = ({
             variant="outline"
             size="sm"
             className="text-xs"
-            disabled={userCredits?.credits_remaining === 0}
+            disabled={!userCredits || userCredits?.credits_remaining === 0}
             onClick={() => onActivateClick(event)}
           >
             Activate
