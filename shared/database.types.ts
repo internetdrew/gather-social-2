@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_transactions: {
+        Row: {
+          created_at: string
+          credits_delta: number
+          description: string
+          event_id: string | null
+          id: string
+          stripe_session_id: string | null
+          transaction_type: Database["public"]["Enums"]["TRANSACTION_TYPE"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits_delta?: number
+          description: string
+          event_id?: string | null
+          id?: string
+          stripe_session_id?: string | null
+          transaction_type: Database["public"]["Enums"]["TRANSACTION_TYPE"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits_delta?: number
+          description?: string
+          event_id?: string | null
+          id?: string
+          stripe_session_id?: string | null
+          transaction_type?: Database["public"]["Enums"]["TRANSACTION_TYPE"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_memberships: {
         Row: {
           created_at: string
@@ -117,11 +158,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_user_credits: {
+        Args: {
+          p_user_id: string
+          p_credit_amount: number
+          p_session_id?: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       EVENT_MEMBERSHIP_ROLE: "ADMIN" | "GUEST"
       EVENT_STATUS: "DRAFT" | "ACTIVE" | "EXPIRED"
+      TRANSACTION_TYPE: "PURCHASE" | "ACTIVATION" | "REFUND"
       TRUST_LEVEL: "LOW" | "HIGH"
     }
     CompositeTypes: {
@@ -252,6 +301,7 @@ export const Constants = {
     Enums: {
       EVENT_MEMBERSHIP_ROLE: ["ADMIN", "GUEST"],
       EVENT_STATUS: ["DRAFT", "ACTIVE", "EXPIRED"],
+      TRANSACTION_TYPE: ["PURCHASE", "ACTIVATION", "REFUND"],
       TRUST_LEVEL: ["LOW", "HIGH"],
     },
   },
