@@ -1,8 +1,7 @@
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import express from "express";
 import cors from "cors";
-import { publicProcedure, router, createContext } from "./trpc";
-import { z } from "zod";
+import { router, createContext } from "./trpc";
 import dotenv from "dotenv";
 import path from "path";
 import compression from "compression";
@@ -10,17 +9,16 @@ import helmet from "helmet";
 import { createServerSupabaseClient } from "./supabase";
 import cookieParser from "cookie-parser";
 import { eventRouter } from "./routers/event";
+import { stripeHandler } from "./handlers/stripe";
+import { checkoutRouter } from "./routers/checkout";
+import { creditRouter } from "./routers/credit";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 export const appRouter = router({
   event: eventRouter,
-  greeting: publicProcedure
-    .input(z.object({ intro: z.string() }))
-    .query((opts) => {
-      const { input } = opts;
-      return `${input.intro} LyteStack` as const;
-    }),
+  checkout: checkoutRouter,
+  credit: creditRouter,
 });
 
 const corsOptions = {
@@ -33,6 +31,7 @@ const app = express();
 app.use(compression());
 app.use(helmet());
 app.use(cors(corsOptions));
+app.use("/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -46,6 +45,8 @@ app.get("/auth/callback", async function (req, res) {
   }
   res.redirect(303, `/${(next as string)?.slice(1)}`);
 });
+
+app.post("/webhook", stripeHandler);
 
 app.use(
   "/trpc",

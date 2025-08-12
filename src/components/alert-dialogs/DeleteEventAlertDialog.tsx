@@ -26,14 +26,14 @@ const DeleteEventAlertDialog = ({
 }: DeleteEventAlertDialogProps) => {
   const deleteEventMutation = useMutation(trpc.event.delete.mutationOptions());
 
-  const handleDeleteEvent = () => {
-    deleteEventMutation.mutate(
+  const handleDeleteEvent = async () => {
+    deleteEventMutation.mutateAsync(
       { id: event.id },
       {
-        onSuccess: () => {
-          onOpenChange(false);
+        onSuccess: async () => {
+          await queryClient.invalidateQueries(trpc.event.list.queryOptions());
           toast.success("Event deleted successfully");
-          queryClient.invalidateQueries(trpc.event.list.queryOptions());
+          onOpenChange(false);
         },
         onError: (error) => {
           console.error(error);

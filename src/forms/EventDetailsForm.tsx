@@ -63,20 +63,20 @@ const EventDetailsForm = ({
 
   const onSubmit = (values: z.infer<typeof eventDetailsSchema>) => {
     if (event) {
-      updateEventMutation.mutate(
+      updateEventMutation.mutateAsync(
         {
           id: event.id,
           ...values,
           trust_level: values.trustLevel,
         },
         {
-          onSuccess: () => {
-            toast.success("Event updated successfully");
+          onSuccess: async () => {
             form.reset();
-            queryClient.invalidateQueries({
+            onSuccess();
+            await queryClient.invalidateQueries({
               queryKey: trpc.event.list.queryKey(),
             });
-            onSuccess();
+            toast.success("Event updated successfully");
           },
           onError: (error) => {
             console.error(error);
@@ -85,19 +85,19 @@ const EventDetailsForm = ({
         },
       );
     } else {
-      createEventMutation.mutate(
+      createEventMutation.mutateAsync(
         {
           ...values,
           trust_level: values.trustLevel,
         },
         {
-          onSuccess: () => {
-            toast.success("Event created successfully");
+          onSuccess: async () => {
             form.reset();
-            queryClient.invalidateQueries({
+            onSuccess();
+            await queryClient.invalidateQueries({
               queryKey: trpc.event.list.queryKey(),
             });
-            onSuccess();
+            toast.success("Event created successfully");
           },
           onError: (error) => {
             console.error(error);

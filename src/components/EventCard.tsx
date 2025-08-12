@@ -16,15 +16,26 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { EllipsisVerticalIcon, Users, Shield, Calendar } from "lucide-react";
+import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "./ui/skeleton";
 const EventCard = ({
   event,
   onEditClick,
   onDeleteClick,
+  onActivateClick,
 }: {
   event: Tables<"events">;
   onEditClick: (event: Tables<"events">) => void;
   onDeleteClick: (event: Tables<"events">) => void;
+  onActivateClick: (event: Tables<"events">) => void;
 }) => {
+  const { data: userCredits, isLoading: userCreditsLoading } = useQuery(
+    trpc.credit.fetchUserCredits.queryOptions(),
+  );
+
+  console.log(userCredits);
+
   return (
     <Card>
       <CardHeader>
@@ -66,9 +77,19 @@ const EventCard = ({
             </div>
           )}
         </div>
-        <Button variant="outline" size="sm" className="text-xs">
-          Activate
-        </Button>
+        {userCreditsLoading ? (
+          <Skeleton className="h-6 w-20 rounded-sm" />
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-xs"
+            disabled={!userCredits || userCredits?.credits_remaining === 0}
+            onClick={() => onActivateClick(event)}
+          >
+            Activate
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

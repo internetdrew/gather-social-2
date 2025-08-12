@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ThemeToggle } from "./theme-toggle";
+// import { ThemeToggle } from "./theme-toggle";
 import { useAuth } from "@/contexts/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { supabaseBrowserClient } from "@/lib/supabase";
+import CreditsDisplay from "./CreditsDisplay";
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -38,8 +39,9 @@ const Navbar = () => {
         </svg>
         Gather <span className="font-light">Social</span>
       </Link>
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
+      <div className="flex items-center gap-4">
+        <CreditsDisplay />
+        {/* <ThemeToggle /> */}
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
