@@ -3,6 +3,7 @@ import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Constants } from "../../shared/database.types";
 import { supabaseAdminClient } from "../supabase";
+import { nanoid } from "nanoid";
 
 export const eventRouter = router({
   create: protectedProcedure
@@ -115,6 +116,69 @@ export const eventRouter = router({
           message: error.message,
         });
       }
+      return data;
+    }),
+  activate: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const THIRTY_DAYS_IN_MS = 30 * 24 * 60 * 60 * 1000;
+
+      const { data: userCredits, error: userCreditsError } =
+        await supabaseAdminClient
+          .from("user_credits")
+          .select("*")
+          .eq("user_id", ctx.user.id)
+          .single();
+
+      if (userCreditsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: userCreditsError.message,
+        });
+      }
+
+      if (userCredits.credits_remaining < 1) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Insufficient credits to activate event",
+        });
+      }
+
+      const { data, error } = await supabaseAdminClient
+        .from("events")
+        .update({
+          activated_at: new Date().toISOString(),
+          expires_at: new Date(Date.now() + THIRTY_DAYS_IN_MS).toISOString(),
+          join_code: nanoid(8),
+          status: "ACTIVE",
+        })
+        .eq("id", input.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+
+      const { error: userCreditsUpdateError } = await supabaseAdminClient
+        .from("user_credits")
+        .update({
+          credits_remaining: userCredits.credits_remaining - 1,
+        })
+        .eq("user_id", ctx.user.id)
+        .select()
+        .single();
+
+      if (userCreditsUpdateError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: userCreditsUpdateError.message,
+        });
+      }
+
       return data;
     }),
 });
