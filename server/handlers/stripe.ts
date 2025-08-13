@@ -40,14 +40,14 @@ export const stripeHandler = async (req: Request, res: Response) => {
           );
 
           if (userId && creditAmount > 0) {
-            const { data, error } = await supabaseAdminClient.rpc(
-              "add_user_credits",
-              {
-                p_user_id: userId,
-                p_credit_amount: creditAmount,
-                p_session_id: checkoutSession.id,
-              },
-            );
+            const { data, error } = await supabaseAdminClient
+              .from("user_credits")
+              .insert({
+                user_id: userId,
+                stripe_session_id: checkoutSession.id,
+              })
+              .select()
+              .single();
 
             if (error) {
               console.error("Error adding user credits:", error);

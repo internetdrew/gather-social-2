@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { Constants } from "../../shared/database.types";
 import { supabaseAdminClient } from "../supabase";
+import { nanoid } from "nanoid";
 
 export const eventRouter = router({
   create: protectedProcedure
@@ -10,7 +10,6 @@ export const eventRouter = router({
       z.object({
         title: z.string(),
         date: z.coerce.date(),
-        trust_level: z.enum(Constants.public.Enums.TRUST_LEVEL),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -18,7 +17,6 @@ export const eventRouter = router({
         .from("events")
         .insert({
           title: input.title,
-          trust_level: input.trust_level,
           date: input.date.toISOString(),
           host_id: ctx.user.id,
         })
@@ -59,7 +57,7 @@ export const eventRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
     const { data, error } = await supabaseAdminClient
       .from("events")
-      .select("*")
+      .select("*, host:profiles(full_name, avatar_url)")
       .eq("host_id", ctx.user.id)
       .order("date", { ascending: true });
 
@@ -77,7 +75,6 @@ export const eventRouter = router({
         id: z.string(),
         title: z.string(),
         date: z.coerce.date(),
-        trust_level: z.enum(Constants.public.Enums.TRUST_LEVEL),
       }),
     )
     .mutation(async ({ input }) => {
@@ -116,5 +113,68 @@ export const eventRouter = router({
         });
       }
       return data;
+    }),
+  activate: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const THIRTY_DAYS_IN_MS = 30 * 24 * 60 * 60 * 1000;
+
+      const { data: availableCredit, error: availableCreditError } =
+        await supabaseAdminClient
+          .from("user_credits")
+          .select("*")
+          .is("used_for_event_id", null)
+          .eq("user_id", ctx.user.id)
+          .maybeSingle();
+
+      if (availableCreditError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: availableCreditError.message,
+        });
+      }
+
+      if (!availableCredit) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Insufficient credits to activate event",
+        });
+      }
+
+      const { data: eventData, error: eventError } = await supabaseAdminClient
+        .from("events")
+        .update({
+          activated_at: new Date().toISOString(),
+          expires_at: new Date(Date.now() + THIRTY_DAYS_IN_MS).toISOString(),
+          join_code: nanoid(8),
+          status: "ACTIVE",
+        })
+        .eq("id", input.id)
+        .select()
+        .single();
+
+      if (eventError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: eventError.message,
+        });
+      }
+
+      const { error: userCreditsUpdateError } = await supabaseAdminClient
+        .from("user_credits")
+        .update({
+          used_for_event_id: eventData.id,
+          used_at: new Date().toISOString(),
+        })
+        .eq("id", availableCredit.id);
+
+      if (userCreditsUpdateError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: userCreditsUpdateError.message,
+        });
+      }
+
+      return eventData;
     }),
 });

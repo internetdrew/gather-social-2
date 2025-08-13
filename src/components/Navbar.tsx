@@ -40,22 +40,24 @@ const Navbar = () => {
         Gather <span className="font-light">Social</span>
       </Link>
       <div className="flex items-center gap-4">
-        <CreditsDisplay />
-        {/* <ThemeToggle /> */}
         {user && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="size-7">
-                <AvatarImage src={user.user_metadata.avatar_url} />
-                <AvatarFallback>
-                  {user.user_metadata.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={signOut}>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <>
+            <CreditsDisplay />
+            {/* <ThemeToggle /> */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="size-7">
+                  <AvatarImage src={user.user_metadata.avatar_url} />
+                  <AvatarFallback>
+                    {user.user_metadata.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={signOut}>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
         )}
       </div>
     </nav>

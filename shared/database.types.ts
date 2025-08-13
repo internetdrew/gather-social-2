@@ -14,47 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      credit_transactions: {
-        Row: {
-          created_at: string
-          credits_delta: number
-          description: string
-          event_id: string | null
-          id: string
-          stripe_session_id: string | null
-          transaction_type: Database["public"]["Enums"]["TRANSACTION_TYPE"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          credits_delta?: number
-          description: string
-          event_id?: string | null
-          id?: string
-          stripe_session_id?: string | null
-          transaction_type: Database["public"]["Enums"]["TRANSACTION_TYPE"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          credits_delta?: number
-          description?: string
-          event_id?: string | null
-          id?: string
-          stripe_session_id?: string | null
-          transaction_type?: Database["public"]["Enums"]["TRANSACTION_TYPE"]
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "credit_transactions_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       event_memberships: {
         Row: {
           created_at: string
@@ -85,6 +44,13 @@ export type Database = {
             referencedRelation: "events"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "event_memberships_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       events: {
@@ -93,85 +59,127 @@ export type Database = {
           created_at: string
           date: string
           expires_at: string | null
-          host_id: string
+          host_id: string | null
           id: string
           join_code: string | null
+          qr_code_url: string | null
           status: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title: string
-          trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
         Insert: {
           activated_at?: string | null
           created_at?: string
           date: string
           expires_at?: string | null
-          host_id: string
+          host_id?: string | null
           id?: string
           join_code?: string | null
+          qr_code_url?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title: string
-          trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
         Update: {
           activated_at?: string | null
           created_at?: string
           date?: string
           expires_at?: string | null
-          host_id?: string
+          host_id?: string | null
           id?: string
           join_code?: string | null
+          qr_code_url?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title?: string
-          trust_level?: Database["public"]["Enums"]["TRUST_LEVEL"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
       user_credits: {
         Row: {
           created_at: string
-          credits_purchased: number
-          credits_remaining: number
           id: string
-          updated_at: string
+          stripe_session_id: string
+          used_at: string | null
+          used_for_event_id: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
-          credits_purchased?: number
-          credits_remaining?: number
           id?: string
-          updated_at?: string
+          stripe_session_id: string
+          used_at?: string | null
+          used_for_event_id?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
-          credits_purchased?: number
-          credits_remaining?: number
           id?: string
-          updated_at?: string
+          stripe_session_id?: string
+          used_at?: string | null
+          used_for_event_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_credits_used_for_event_id_fkey"
+            columns: ["used_for_event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_credits_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      add_user_credits: {
-        Args: {
-          p_user_id: string
-          p_credit_amount: number
-          p_session_id?: string
-        }
-        Returns: Json
-      }
+      [_ in never]: never
     }
     Enums: {
       EVENT_MEMBERSHIP_ROLE: "ADMIN" | "GUEST"
       EVENT_STATUS: "DRAFT" | "ACTIVE" | "EXPIRED"
       TRANSACTION_TYPE: "PURCHASE" | "ACTIVATION" | "REFUND"
-      TRUST_LEVEL: "LOW" | "HIGH"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -302,7 +310,6 @@ export const Constants = {
       EVENT_MEMBERSHIP_ROLE: ["ADMIN", "GUEST"],
       EVENT_STATUS: ["DRAFT", "ACTIVE", "EXPIRED"],
       TRANSACTION_TYPE: ["PURCHASE", "ACTIVATION", "REFUND"],
-      TRUST_LEVEL: ["LOW", "HIGH"],
     },
   },
 } as const

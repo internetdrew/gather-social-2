@@ -15,27 +15,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { EllipsisVerticalIcon, Users, Shield, Calendar } from "lucide-react";
+import { EllipsisVerticalIcon, Calendar } from "lucide-react";
 import { trpc } from "@/utils/trpc";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "./ui/skeleton";
+import { Link } from "react-router";
+
 const EventCard = ({
   event,
   onEditClick,
   onDeleteClick,
   onActivateClick,
+  onInviteClick,
 }: {
   event: Tables<"events">;
   onEditClick: (event: Tables<"events">) => void;
   onDeleteClick: (event: Tables<"events">) => void;
   onActivateClick: (event: Tables<"events">) => void;
+  onInviteClick: (event: Tables<"events">) => void;
 }) => {
-  const { data: userCredits, isLoading: userCreditsLoading } = useQuery(
-    trpc.credit.fetchUserCredits.queryOptions(),
-  );
-
-  console.log(userCredits);
-
   return (
     <Card>
       <CardHeader>
@@ -65,34 +63,53 @@ const EventCard = ({
 
       <CardFooter className="flex justify-between">
         <div className="flex items-center gap-2">
-          {event.trust_level === "HIGH" ? (
-            <div className="flex items-center gap-1 text-green-600">
-              <Users className="h-4 w-4" />
-              <span className="text-sm font-medium">Familiar crowd</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-orange-600">
-              <Shield className="h-4 w-4" />
-              <span className="text-sm font-medium">Unfamiliar crowd</span>
-            </div>
+          {event.status === "ACTIVE" && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs"
+              onClick={() => onInviteClick(event)}
+            >
+              Invite Guests
+            </Button>
           )}
         </div>
-        {userCreditsLoading ? (
-          <Skeleton className="h-6 w-20 rounded-sm" />
-        ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-xs"
-            disabled={!userCredits || userCredits?.credits_remaining === 0}
-            onClick={() => onActivateClick(event)}
-          >
-            Activate
-          </Button>
-        )}
+        <EventCardCTA event={event} onActivateClick={onActivateClick} />
       </CardFooter>
     </Card>
   );
 };
 
 export default EventCard;
+
+const EventCardCTA = ({
+  event,
+  onActivateClick,
+}: {
+  event: Tables<"events">;
+  onActivateClick: (event: Tables<"events">) => void;
+}) => {
+  const { data: userCredits, isLoading: userCreditsLoading } = useQuery(
+    trpc.credit.getAvailableCredits.queryOptions(),
+  );
+
+  if (userCreditsLoading) {
+    return <Skeleton className="h-6 w-20 rounded-sm" />;
+  }
+
+  return event.status === "ACTIVE" ? (
+    <Button size="sm" className="text-xs" asChild>
+      <Link to={`/events/${event.id}`}>Visit Gallery</Link>
+    </Button>
+  ) : (
+    <Button
+      variant="outline"
+      size="sm"
+      className="text-xs"
+      disabled={userCredits === 0}
+      onClick={() => onActivateClick(event)}
+    >
+      Activate
+    </Button>
+  );
+};

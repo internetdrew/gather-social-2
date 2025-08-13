@@ -4,7 +4,7 @@ import { Skeleton } from "./ui/skeleton";
 
 const CreditsDisplay = () => {
   const { data: userCredits, isLoading: userCreditsLoading } = useQuery(
-    trpc.credit.fetchUserCredits.queryOptions(),
+    trpc.credit.getAvailableCredits.queryOptions(),
   );
 
   if (userCreditsLoading) {
@@ -13,7 +13,7 @@ const CreditsDisplay = () => {
 
   return (
     <span className="text-muted-foreground text-sm">
-      Credits: {userCredits?.credits_remaining ?? 0}
+      Credits: {userCredits || 0}
     </span>
   );
 };

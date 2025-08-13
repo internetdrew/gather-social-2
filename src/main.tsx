@@ -8,6 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import Home from "./routes/Home.tsx";
 import RequireSignin from "./components/RequireSignin.tsx";
 import { AuthProvider } from "./contexts/auth.tsx";
+import Event from "./routes/Event.tsx";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
             <Home />
           </RequireSignin>
         ),
+      },
+      {
+        path: "/events/:eventId",
+        element: <Event />,
       },
     ],
   },
