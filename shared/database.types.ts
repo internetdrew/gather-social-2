@@ -44,6 +44,13 @@ export type Database = {
             referencedRelation: "events"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "event_memberships_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       events: {
@@ -52,7 +59,7 @@ export type Database = {
           created_at: string
           date: string
           expires_at: string | null
-          host_id: string
+          host_id: string | null
           id: string
           join_code: string | null
           qr_code_url: string | null
@@ -65,7 +72,7 @@ export type Database = {
           created_at?: string
           date: string
           expires_at?: string | null
-          host_id: string
+          host_id?: string | null
           id?: string
           join_code?: string | null
           qr_code_url?: string | null
@@ -78,13 +85,48 @@ export type Database = {
           created_at?: string
           date?: string
           expires_at?: string | null
-          host_id?: string
+          host_id?: string | null
           id?: string
           join_code?: string | null
           qr_code_url?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title?: string
           trust_level?: Database["public"]["Enums"]["TRUST_LEVEL"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -119,6 +161,13 @@ export type Database = {
             columns: ["used_for_event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_credits_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
