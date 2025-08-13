@@ -30,17 +30,19 @@ export const qrRouter = router({
         });
       }
 
-      const qrCodeDataUrl = await QRCode.toDataURL(`${baseUrl}/e/${event.id}`, {
-        width: 400,
-        margin: 2,
-        color: { dark: "#000000", light: "#FFFFFF" },
-      });
+      const qrCodeDataUrl = await QRCode.toDataURL(
+        `${baseUrl}/events/${event.id}`,
+        {
+          width: 400,
+          margin: 2,
+          color: { dark: "#000000", light: "#FFFFFF" },
+        },
+      );
 
       // Convert data URL to buffer
       const base64Data = qrCodeDataUrl.split(",")[1];
       const buffer = Buffer.from(base64Data, "base64");
 
-      // Generate unique filename
       const filePath = generateQRFilePath(event.id);
 
       // Upload to Supabase storage
