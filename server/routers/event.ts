@@ -123,28 +123,29 @@ export const eventRouter = router({
     .mutation(async ({ input, ctx }) => {
       const THIRTY_DAYS_IN_MS = 30 * 24 * 60 * 60 * 1000;
 
-      const { data: userCredits, error: userCreditsError } =
+      const { data: availableCredit, error: availableCreditError } =
         await supabaseAdminClient
           .from("user_credits")
           .select("*")
+          .is("used_for_event_id", null)
           .eq("user_id", ctx.user.id)
-          .single();
+          .maybeSingle();
 
-      if (userCreditsError) {
+      if (availableCreditError) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: userCreditsError.message,
+          message: availableCreditError.message,
         });
       }
 
-      if (userCredits.credits_remaining < 1) {
+      if (!availableCredit) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Insufficient credits to activate event",
         });
       }
 
-      const { data, error } = await supabaseAdminClient
+      const { data: eventData, error: eventError } = await supabaseAdminClient
         .from("events")
         .update({
           activated_at: new Date().toISOString(),
@@ -156,21 +157,20 @@ export const eventRouter = router({
         .select()
         .single();
 
-      if (error) {
+      if (eventError) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message,
+          message: eventError.message,
         });
       }
 
       const { error: userCreditsUpdateError } = await supabaseAdminClient
         .from("user_credits")
         .update({
-          credits_remaining: userCredits.credits_remaining - 1,
+          used_for_event_id: eventData.id,
+          used_at: new Date().toISOString(),
         })
-        .eq("user_id", ctx.user.id)
-        .select()
-        .single();
+        .eq("id", availableCredit.id);
 
       if (userCreditsUpdateError) {
         throw new TRPCError({
@@ -179,6 +179,6 @@ export const eventRouter = router({
         });
       }
 
-      return data;
+      return eventData;
     }),
 });
