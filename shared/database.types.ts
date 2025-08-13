@@ -65,7 +65,6 @@ export type Database = {
           qr_code_url: string | null
           status: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title: string
-          trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
         Insert: {
           activated_at?: string | null
@@ -78,7 +77,6 @@ export type Database = {
           qr_code_url?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title: string
-          trust_level: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
         Update: {
           activated_at?: string | null
@@ -91,7 +89,6 @@ export type Database = {
           qr_code_url?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title?: string
-          trust_level?: Database["public"]["Enums"]["TRUST_LEVEL"]
         }
         Relationships: [
           {
@@ -183,7 +180,6 @@ export type Database = {
       EVENT_MEMBERSHIP_ROLE: "ADMIN" | "GUEST"
       EVENT_STATUS: "DRAFT" | "ACTIVE" | "EXPIRED"
       TRANSACTION_TYPE: "PURCHASE" | "ACTIVATION" | "REFUND"
-      TRUST_LEVEL: "LOW" | "HIGH"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -314,7 +310,6 @@ export const Constants = {
       EVENT_MEMBERSHIP_ROLE: ["ADMIN", "GUEST"],
       EVENT_STATUS: ["DRAFT", "ACTIVE", "EXPIRED"],
       TRANSACTION_TYPE: ["PURCHASE", "ACTIVATION", "REFUND"],
-      TRUST_LEVEL: ["LOW", "HIGH"],
     },
   },
 } as const
