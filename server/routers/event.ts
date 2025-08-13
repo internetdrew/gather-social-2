@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { Constants } from "../../shared/database.types";
 import { supabaseAdminClient } from "../supabase";
 import { nanoid } from "nanoid";
 
@@ -11,7 +10,6 @@ export const eventRouter = router({
       z.object({
         title: z.string(),
         date: z.coerce.date(),
-        trust_level: z.enum(Constants.public.Enums.TRUST_LEVEL),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -19,7 +17,6 @@ export const eventRouter = router({
         .from("events")
         .insert({
           title: input.title,
-          trust_level: input.trust_level,
           date: input.date.toISOString(),
           host_id: ctx.user.id,
         })
@@ -78,7 +75,6 @@ export const eventRouter = router({
         id: z.string(),
         title: z.string(),
         date: z.coerce.date(),
-        trust_level: z.enum(Constants.public.Enums.TRUST_LEVEL),
       }),
     )
     .mutation(async ({ input }) => {
