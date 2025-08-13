@@ -66,13 +66,11 @@ Use this starter pack to create an SPA quickly and deploy to Vercel. If you want
 The development environment uses Vite's dev server with a proxy configuration to seamlessly connect the frontend and backend:
 
 1. **Vite Dev Server**:
-
    - Runs on `http://localhost:5173`
    - Handles hot module replacement (HMR) for React components
    - Serves static assets and handles client-side routing
 
 2. **Express Server**:
-
    - Runs on `http://localhost:3000`
    - Handles tRPC API requests
    - Manages server-side logic and database connections
@@ -122,7 +120,6 @@ The development environment uses Vite's dev server with a proxy configuration to
 Here's what each part does:
 
 1. **Builds Configuration**:
-
    - First build: Uses `@vercel/node` to build the Express server from `server/index.ts`
    - Second build: Uses `@vercel/static-build` to build the client-side React application, outputting to the `dist` directory
 
@@ -140,3 +137,9 @@ The Express server uses the following middleware in this order:
 4. [**express.json**](https://expressjs.com/en/api.html#express.json): Parses incoming JSON request bodies
 
 I choose these as general best-practices for providing security, performance, and proper request handling. I encourage you to [take a look at Express's middlware resources to find others that may suit your app needs](https://expressjs.com/en/resources/middleware.html).
+
+## Listen to Webhook in Development
+
+```bash
+stripe listen --forward-to localhost:3000/webhook
+```
