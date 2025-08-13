@@ -60,7 +60,7 @@ export const eventRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
     const { data, error } = await supabaseAdminClient
       .from("events")
-      .select("*")
+      .select("*, host:profiles(full_name, avatar_url)")
       .eq("host_id", ctx.user.id)
       .order("date", { ascending: true });
 
