@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Constants, type Tables } from "../../shared/database.types.ts";
+import { type Tables } from "../../shared/database.types.ts";
 import {
   Form,
   FormControl,
@@ -25,7 +25,6 @@ import { cn } from "@/lib/utils";
 import { queryClient, trpc } from "@/utils/trpc";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox.tsx";
 
 const eventDetailsSchema = z.object({
   title: z.string().min(1, { message: "Please add an event title" }),
@@ -39,7 +38,6 @@ const eventDetailsSchema = z.object({
       message: "Event date cannot be in the past",
     },
   ),
-  trustLevel: z.enum(Constants.public.Enums.TRUST_LEVEL),
 });
 
 const EventDetailsForm = ({
@@ -54,7 +52,6 @@ const EventDetailsForm = ({
     defaultValues: {
       title: event?.title || "",
       date: event?.date ? new Date(event.date) : new Date(),
-      trustLevel: event?.trust_level || "LOW",
     },
   });
 
@@ -67,7 +64,6 @@ const EventDetailsForm = ({
         {
           id: event.id,
           ...values,
-          trust_level: values.trustLevel,
         },
         {
           onSuccess: async () => {
@@ -88,7 +84,6 @@ const EventDetailsForm = ({
       createEventMutation.mutateAsync(
         {
           ...values,
-          trust_level: values.trustLevel,
         },
         {
           onSuccess: async () => {
@@ -175,36 +170,6 @@ const EventDetailsForm = ({
               <FormMessage />
             </FormItem>
           )}
-        />
-        <FormField
-          control={form.control}
-          name="trustLevel"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormControl className="flex flex-row items-center gap-2">
-                  <div className="flex flex-row items-center gap-2">
-                    <Checkbox
-                      checked={field.value === "HIGH"}
-                      onCheckedChange={(checked) => {
-                        return checked
-                          ? field.onChange("HIGH")
-                          : field.onChange("LOW");
-                      }}
-                    />
-                    <FormLabel htmlFor="trustLevel">
-                      I know most people who will attend this event
-                    </FormLabel>
-                  </div>
-                </FormControl>
-                <FormDescription>
-                  {field.value === "HIGH"
-                    ? "Guests can join directly with the event link and unique code. Great for events like weddings, parties, etc."
-                    : "Guests will need to sign in before they're able to submit photos. Great for events like conferences, etc."}
-                </FormDescription>
-              </FormItem>
-            );
-          }}
         />
         <div className="flex justify-end">
           <Button
