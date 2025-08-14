@@ -13,13 +13,13 @@ import { stripeHandler } from "./handlers/stripe";
 import { checkoutRouter } from "./routers/checkout";
 import { creditRouter } from "./routers/credit";
 import { qrRouter } from "./routers/qr";
-import { joinCodeRouter } from "./routers/joinCode";
+import { passcodeRouter } from "./routers/passcode";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 export const appRouter = router({
   event: eventRouter,
-  joinCode: joinCodeRouter,
+  passcode: passcodeRouter,
   checkout: checkoutRouter,
   credit: creditRouter,
   qr: qrRouter,
