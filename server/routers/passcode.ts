@@ -73,13 +73,6 @@ export const passcodeRouter = router({
 
       const isValid = bcrypt.compareSync(passcode, storedPasscode.code);
 
-      if (!isValid) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Invalid passcode.",
-        });
-      }
-
       return isValid;
     }),
 });
