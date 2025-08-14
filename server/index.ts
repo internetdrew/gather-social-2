@@ -14,6 +14,7 @@ import { checkoutRouter } from "./routers/checkout";
 import { creditRouter } from "./routers/credit";
 import { qrRouter } from "./routers/qr";
 import { passcodeRouter } from "./routers/passcode";
+import { eventMembershipRouter } from "./routers/eventMembership";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -23,6 +24,7 @@ export const appRouter = router({
   checkout: checkoutRouter,
   credit: creditRouter,
   qr: qrRouter,
+  membership: eventMembershipRouter,
 });
 
 const corsOptions = {
