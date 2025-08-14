@@ -12,17 +12,23 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "../../../server/index";
+
+type JoinCodeOutput = inferRouterOutputs<AppRouter>["joinCode"]["createCode"];
 
 interface EventActivatetionAlertDialogProps {
   event: Tables<"events">;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccessfulActivation: (joinCode: JoinCodeOutput) => void;
 }
 
 const EventActivatetionAlertDialog = ({
   event,
   open,
   onOpenChange,
+  onSuccessfulActivation,
 }: EventActivatetionAlertDialogProps) => {
   const activateEventMutation = useMutation(
     trpc.event.activate.mutationOptions({
@@ -45,12 +51,20 @@ const EventActivatetionAlertDialog = ({
   const qrCodeMutation = useMutation(
     trpc.qr.generateEventQRCode.mutationOptions(),
   );
+  const createJoinCodeMutation = useMutation(
+    trpc.joinCode.createCode.mutationOptions({
+      onSuccess: (joinCode) => {
+        onSuccessfulActivation(joinCode);
+      },
+    }),
+  );
 
   const pending = activateEventMutation.isPending || qrCodeMutation.isPending;
 
   const handleActivateEvent = async () => {
     try {
       await activateEventMutation.mutateAsync({ id: event.id });
+      await createJoinCodeMutation.mutateAsync({ eventId: event.id });
       await qrCodeMutation.mutateAsync(
         {
           eventId: event.id,
@@ -88,9 +102,8 @@ const EventActivatetionAlertDialog = ({
             This will activate your event gallery for 30 days. After 30 days, it
             will automatically deactivate. <br />
             <br />
-            <span className="font-bold text-pink-600">
-              Important: Once activated, this cannot be undone.
-            </span>
+            <span className="font-bold text-pink-600">Important:</span> Once
+            activated, this cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
