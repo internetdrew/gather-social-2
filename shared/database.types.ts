@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
@@ -61,7 +61,6 @@ export type Database = {
           expires_at: string | null
           host_id: string | null
           id: string
-          join_code: string | null
           qr_code_url: string | null
           status: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title: string
@@ -73,7 +72,6 @@ export type Database = {
           expires_at?: string | null
           host_id?: string | null
           id?: string
-          join_code?: string | null
           qr_code_url?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title: string
@@ -85,7 +83,6 @@ export type Database = {
           expires_at?: string | null
           host_id?: string | null
           id?: string
-          join_code?: string | null
           qr_code_url?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
           title?: string
@@ -96,6 +93,35 @@ export type Database = {
             columns: ["host_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      passcodes: {
+        Row: {
+          code: string
+          created_at: string
+          event_id: string
+          id: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          event_id: string
+          id?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          event_id?: string
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "join_codes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]

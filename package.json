@@ -10,7 +10,8 @@
     "build": "tsc -b tsconfig.api.json && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gen:types": "dotenv -e .env -- cross-env supabase gen types typescript --project-id=$SUPABASE_PROJECT_ID > shared/database.types.ts"
+    "gen:types": "dotenv -e .env -- cross-env supabase gen types typescript --project-id=$SUPABASE_PROJECT_ID > shared/database.types.ts",
+    "stripe:webhook": "stripe listen --forward-to localhost:3000/webhook"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -31,6 +32,7 @@
     "@trpc/server": "^11.1.2",
     "@trpc/tanstack-react-query": "^11.1.2",
     "@types/cookie-parser": "^1.4.9",
+    "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "compression": "^1.8.0",
@@ -57,6 +59,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",

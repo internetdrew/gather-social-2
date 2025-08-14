@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogContent,
 } from "../ui/dialog";
-import EventDetailsForm from "@/forms/EventDetailsForm";
+import EventDetailsForm from "@/components/forms/EventDetailsForm";
 
 interface EventDialogProps {
   event?: Tables<"events"> | null;
