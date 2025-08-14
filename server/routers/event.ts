@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { supabaseAdminClient } from "../supabase";
-import { nanoid } from "nanoid";
 
 export const eventRouter = router({
   create: protectedProcedure
@@ -146,7 +145,6 @@ export const eventRouter = router({
         .update({
           activated_at: new Date().toISOString(),
           expires_at: new Date(Date.now() + THIRTY_DAYS_IN_MS).toISOString(),
-          join_code: nanoid(8),
           status: "ACTIVE",
         })
         .eq("id", input.id)
@@ -176,5 +174,23 @@ export const eventRouter = router({
       }
 
       return eventData;
+    }),
+  getById: publicProcedure
+    .input(z.object({ eventId: z.string() }))
+    .query(async ({ input }) => {
+      const { data, error } = await supabaseAdminClient
+        .from("events")
+        .select("*, host:profiles(full_name, avatar_url)")
+        .eq("id", input.eventId)
+        .maybeSingle();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+
+      return data;
     }),
 });
