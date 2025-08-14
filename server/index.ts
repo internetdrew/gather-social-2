@@ -24,7 +24,7 @@ export const appRouter = router({
   checkout: checkoutRouter,
   credit: creditRouter,
   qr: qrRouter,
-  membership: eventMembershipRouter,
+  eventMembership: eventMembershipRouter,
 });
 
 const corsOptions = {
