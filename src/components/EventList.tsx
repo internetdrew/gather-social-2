@@ -26,7 +26,7 @@ const EventList = ({
   const [renderInviteDialog, setRenderInviteDialog] = useState(false);
   const [renderActivationAlertDialog, setRenderActivationAlertDialog] =
     useState(false);
-  const [renderJoinCodeAlertDialog, setRenderJoinCodeAlertDialog] =
+  const [renderPasscodeAlertDialog, setRenderPasscodeAlertDialog] =
     useState(false);
 
   const handleActivateClick = (event: Tables<"events">) => {
@@ -41,7 +41,7 @@ const EventList = ({
 
   const handleSuccessfulActivation = (passcode: PasscodeOutput) => {
     setNewPasscode(passcode);
-    setRenderJoinCodeAlertDialog(true);
+    setRenderPasscodeAlertDialog(true);
   };
 
   return (
@@ -79,8 +79,8 @@ const EventList = ({
       {newPasscode && (
         <PasscodeAlertDialog
           passcodeData={newPasscode}
-          open={renderJoinCodeAlertDialog}
-          onOpenChange={setRenderJoinCodeAlertDialog}
+          open={renderPasscodeAlertDialog}
+          onOpenChange={setRenderPasscodeAlertDialog}
         />
       )}
     </>
