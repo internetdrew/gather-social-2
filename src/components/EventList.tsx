@@ -1,8 +1,13 @@
 import type { Tables } from "shared/database.types";
 import EventCard from "./EventCard";
-import EventActivatetionAlertDialog from "./alert-dialogs/EventActivatetionAlertDialog";
+import EventActivationAlertDialog from "./alert-dialogs/EventActivationAlertDialog";
 import { useState } from "react";
 import EventInviteDialog from "./dialogs/EventInviteDialog";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "../../server/index";
+import PasscodeAlertDialog from "./alert-dialogs/PasscodeAlertDialog";
+
+type PasscodeOutput = inferRouterOutputs<AppRouter>["passcode"]["create"];
 
 const EventList = ({
   events,
@@ -17,8 +22,11 @@ const EventList = ({
     useState<Tables<"events"> | null>(null);
   const [eventSelectedForActivation, setEventSelectedForActivation] =
     useState<Tables<"events"> | null>(null);
+  const [newPasscode, setNewPasscode] = useState<PasscodeOutput | null>(null);
   const [renderInviteDialog, setRenderInviteDialog] = useState(false);
   const [renderActivationAlertDialog, setRenderActivationAlertDialog] =
+    useState(false);
+  const [renderJoinCodeAlertDialog, setRenderJoinCodeAlertDialog] =
     useState(false);
 
   const handleActivateClick = (event: Tables<"events">) => {
@@ -29,6 +37,11 @@ const EventList = ({
   const handleInviteClick = (event: Tables<"events">) => {
     setEventSelectedForInvite(event);
     setRenderInviteDialog(true);
+  };
+
+  const handleSuccessfulActivation = (passcode: PasscodeOutput) => {
+    setNewPasscode(passcode);
+    setRenderJoinCodeAlertDialog(true);
   };
 
   return (
@@ -47,10 +60,11 @@ const EventList = ({
       </div>
 
       {eventSelectedForActivation && (
-        <EventActivatetionAlertDialog
+        <EventActivationAlertDialog
           event={eventSelectedForActivation}
           open={renderActivationAlertDialog}
           onOpenChange={setRenderActivationAlertDialog}
+          onSuccessfulActivation={handleSuccessfulActivation}
         />
       )}
 
@@ -59,6 +73,14 @@ const EventList = ({
           event={eventSelectedForInvite}
           open={renderInviteDialog}
           onOpenChange={setRenderInviteDialog}
+        />
+      )}
+
+      {newPasscode && (
+        <PasscodeAlertDialog
+          passcodeData={newPasscode}
+          open={renderJoinCodeAlertDialog}
+          onOpenChange={setRenderJoinCodeAlertDialog}
         />
       )}
     </>
