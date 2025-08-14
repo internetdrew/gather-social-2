@@ -13,7 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ImageUploader from "@/components/ImageUploader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EllipsisVerticalIcon } from "lucide-react";
 import { useAuth } from "@/contexts/auth";
@@ -23,12 +22,15 @@ import { supabaseBrowserClient } from "@/lib/supabase";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "../../server";
 import { Link } from "react-router";
+import EventWelcomeUserActions from "./EventWelcomeUserActions";
 
 type EventData = inferRouterOutputs<AppRouter>["event"]["getById"];
 
 const EventWelcomeCard = ({ event }: { event: EventData }) => {
   const [signingIn, setSigningIn] = useState(false);
   const { user } = useAuth();
+
+  const userIsHost = user?.id === event?.host_id;
 
   const signInForEvent = async (eventId: string) => {
     setSigningIn(true);
@@ -56,7 +58,7 @@ const EventWelcomeCard = ({ event }: { event: EventData }) => {
           Welcome to the gallery for <em>{event?.title}</em>!
         </CardTitle>
         <CardDescription></CardDescription>
-        {user?.id === event?.host_id && (
+        {userIsHost && (
           <CardAction>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -77,10 +79,7 @@ const EventWelcomeCard = ({ event }: { event: EventData }) => {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {user ? (
-          <div className="flex flex-col gap-4">
-            <p>Hi, {user.user_metadata.full_name}!</p>
-            <ImageUploader eventId={event.id} />
-          </div>
+          <EventWelcomeUserActions eventId={event?.id} />
         ) : (
           <>
             <p>You're almost there! Please sign in to continue.</p>
@@ -100,7 +99,9 @@ const EventWelcomeCard = ({ event }: { event: EventData }) => {
       </CardContent>
       <CardFooter className="flex items-center justify-between gap-2 text-sm font-medium">
         <p className="text-muted-foreground font-medium">
-          Hosted by {event?.host?.full_name}
+          {userIsHost
+            ? "You're hosting this event"
+            : `Hosted by ${event?.host?.full_name}`}
         </p>
 
         <Avatar className="h-7 w-7">
