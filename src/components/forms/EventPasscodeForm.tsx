@@ -46,6 +46,7 @@ const EventPasscodeForm = ({ eventId }: { eventId: string }) => {
         eventId,
         passcode: values.passcode,
       });
+
       if (validPassword) {
         await eventMembershipMutation.mutateAsync(
           { eventId },
