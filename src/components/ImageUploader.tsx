@@ -1,5 +1,5 @@
-const ImageUploader = ({ eventId }: { eventId: string }) => {
-  return <div>ImageUploader {eventId}</div>;
+const ImageUploader = () => {
+  return <div>ImageUploader </div>;
 };
 
 export default ImageUploader;
