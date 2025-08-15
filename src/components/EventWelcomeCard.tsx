@@ -52,7 +52,7 @@ const EventWelcomeCard = ({ event }: { event: EventData }) => {
   }
 
   return (
-    <Card className="mx-auto mt-28 w-full max-w-md">
+    <Card className="mx-auto my-28 w-full max-w-md">
       <CardHeader>
         <CardTitle className="text-xl">
           Welcome to the gallery for <em>{event?.title}</em>!
