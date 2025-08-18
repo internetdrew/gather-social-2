@@ -107,7 +107,6 @@ const ImageUploader = ({ eventId }: { eventId: string }) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsUploading(true);
     try {
-      // Step 1: Ask backend for signed upload URLs
       const { signedUrls } = await getSignedUrlsMutation.mutateAsync({
         eventId,
         files: values.files.map((file) => ({

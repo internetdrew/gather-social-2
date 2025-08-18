@@ -10,7 +10,6 @@ if (!endpointSecret) {
 export const stripeHandler = async (req: Request, res: Response) => {
   let event = req.body;
   if (endpointSecret) {
-    // Get the signature sent by Stripe
     const signature = req.headers["stripe-signature"];
     try {
       event = stripe.webhooks.constructEvent(
@@ -25,7 +24,6 @@ export const stripeHandler = async (req: Request, res: Response) => {
       }
     }
 
-    // Handle the event
     switch (event.type) {
       case "checkout.session.completed": {
         const checkoutSession = event.data.object;
@@ -69,7 +67,6 @@ export const stripeHandler = async (req: Request, res: Response) => {
       }
     }
 
-    // Return a response to acknowledge receipt of the event
     res.json({ received: true });
   }
 };
