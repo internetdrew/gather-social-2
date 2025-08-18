@@ -55,7 +55,7 @@ const EventWelcomeCard = ({ event }: { event: EventData }) => {
     <Card className="mx-auto my-28 w-full max-w-md">
       <CardHeader>
         <CardTitle className="text-xl">
-          Welcome to the gallery for <em>{event?.title}</em>!
+          Upload your photos for <em>{event?.title}</em>
         </CardTitle>
         <CardDescription></CardDescription>
         {userIsHost && (
