@@ -104,6 +104,7 @@ export type Database = {
           created_at: string
           date: string
           expires_at: string | null
+          featured_image: string | null
           host_id: string | null
           id: string
           qr_code_url: string | null
@@ -115,6 +116,7 @@ export type Database = {
           created_at?: string
           date: string
           expires_at?: string | null
+          featured_image?: string | null
           host_id?: string | null
           id?: string
           qr_code_url?: string | null
@@ -126,6 +128,7 @@ export type Database = {
           created_at?: string
           date?: string
           expires_at?: string | null
+          featured_image?: string | null
           host_id?: string | null
           id?: string
           qr_code_url?: string | null
@@ -133,6 +136,13 @@ export type Database = {
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "events_featured_image_fkey"
+            columns: ["featured_image"]
+            isOneToOne: false
+            referencedRelation: "event_images"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_host_id_fkey"
             columns: ["host_id"]
