@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_images: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          mimetype: string
+          size_in_bytes: number
+          storage_path: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          mimetype: string
+          size_in_bytes: number
+          storage_path: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          mimetype?: string
+          size_in_bytes?: number
+          storage_path?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_images_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_images_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_memberships: {
         Row: {
           created_at: string
