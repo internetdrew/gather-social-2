@@ -247,7 +247,7 @@ export const eventRouter = router({
       const imagesWithUrls = data.map((img) => ({
         ...img,
         url: supabaseAdminClient.storage
-          .from("event_images")
+          .from("images")
           .getPublicUrl(img.storage_path).data.publicUrl,
       }));
 
