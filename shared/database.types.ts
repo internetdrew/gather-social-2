@@ -19,8 +19,6 @@ export type Database = {
           created_at: string
           event_id: string
           id: string
-          mimetype: string
-          size_in_bytes: number
           storage_path: string
           uploaded_by: string
         }
@@ -28,8 +26,6 @@ export type Database = {
           created_at?: string
           event_id: string
           id?: string
-          mimetype: string
-          size_in_bytes: number
           storage_path: string
           uploaded_by: string
         }
@@ -37,8 +33,6 @@ export type Database = {
           created_at?: string
           event_id?: string
           id?: string
-          mimetype?: string
-          size_in_bytes?: number
           storage_path?: string
           uploaded_by?: string
         }
