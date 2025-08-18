@@ -56,4 +56,28 @@ export const eventMembershipRouter = router({
 
       return data;
     }),
+  isAdmin: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { eventId } = input;
+      const { data, error } = await supabaseAdminClient
+        .from("event_memberships")
+        .select("role")
+        .eq("event_id", eventId)
+        .eq("user_id", ctx.user.id)
+        .maybeSingle();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+
+      return data?.role === "ADMIN";
+    }),
 });
