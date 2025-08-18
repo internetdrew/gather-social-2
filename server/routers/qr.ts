@@ -39,13 +39,11 @@ export const qrRouter = router({
         },
       );
 
-      // Convert data URL to buffer
       const base64Data = qrCodeDataUrl.split(",")[1];
       const buffer = Buffer.from(base64Data, "base64");
 
       const filePath = generateQRFilePath(event.id);
 
-      // Upload to Supabase storage
       const { data: uploadData, error: uploadError } =
         await supabaseAdminClient.storage
           .from("qr-codes")
@@ -62,7 +60,6 @@ export const qrRouter = router({
         });
       }
 
-      // Get public URL
       const { data: urlData } = supabaseAdminClient.storage
         .from("qr-codes")
         .getPublicUrl(filePath);

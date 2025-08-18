@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_images: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          storage_path: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          storage_path: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          storage_path?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_images_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_images_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_memberships: {
         Row: {
           created_at: string
@@ -59,6 +98,7 @@ export type Database = {
           created_at: string
           date: string
           expires_at: string | null
+          featured_image: string | null
           host_id: string | null
           id: string
           qr_code_url: string | null
@@ -70,6 +110,7 @@ export type Database = {
           created_at?: string
           date: string
           expires_at?: string | null
+          featured_image?: string | null
           host_id?: string | null
           id?: string
           qr_code_url?: string | null
@@ -81,6 +122,7 @@ export type Database = {
           created_at?: string
           date?: string
           expires_at?: string | null
+          featured_image?: string | null
           host_id?: string | null
           id?: string
           qr_code_url?: string | null
@@ -88,6 +130,13 @@ export type Database = {
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "events_featured_image_fkey"
+            columns: ["featured_image"]
+            isOneToOne: false
+            referencedRelation: "event_images"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_host_id_fkey"
             columns: ["host_id"]

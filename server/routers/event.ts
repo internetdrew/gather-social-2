@@ -193,4 +193,38 @@ export const eventRouter = router({
 
       return data;
     }),
+  addImages: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+        images: z.array(
+          z.object({
+            filepath: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { eventId, images } = input;
+      const { data: eventImages, error: eventImagesError } =
+        await supabaseAdminClient
+          .from("event_images")
+          .insert(
+            images.map((image) => ({
+              event_id: eventId,
+              storage_path: image.filepath,
+              uploaded_by: ctx.user.id,
+            })),
+          )
+          .select();
+
+      if (eventImagesError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: eventImagesError.message,
+        });
+      }
+
+      return eventImages;
+    }),
 });

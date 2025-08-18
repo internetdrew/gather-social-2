@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-// import { ThemeToggle } from "./theme-toggle";
 import { useAuth } from "@/contexts/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -43,7 +42,6 @@ const Navbar = () => {
         {user && (
           <>
             <CreditsDisplay />
-            {/* <ThemeToggle /> */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="size-7">

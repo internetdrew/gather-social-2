@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // Get initial session
     supabaseBrowserClient.auth
       .getSession()
       .then(({ data: { session }, error }) => {
@@ -32,7 +31,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) setError(error);
       });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabaseBrowserClient.auth.onAuthStateChange((event, session) => {
