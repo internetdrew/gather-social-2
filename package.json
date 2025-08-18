@@ -10,7 +10,7 @@
     "build": "tsc -b tsconfig.api.json && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gen:types": "dotenv -e .env -- cross-env supabase gen types typescript --project-id=$VITE_SUPABASE_PROJECT_ID > shared/database.types.ts",
+    "gen:types": "dotenv -e .env -- cross-env supabase gen types typescript --project-id=$SUPABASE_PROJECT_ID > shared/database.types.ts",
     "stripe:webhook": "stripe listen --forward-to localhost:3000/webhook"
   },
   "dependencies": {
@@ -22,6 +22,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.12",
     "@supabase/ssr": "^0.6.1",
