@@ -6,9 +6,12 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import { queryClient } from "./utils/trpc";
 import { QueryClientProvider } from "@tanstack/react-query";
 import Home from "./routes/Home.tsx";
-import RequireSignin from "./components/RequireSignin.tsx";
+import RequireSignin from "./components/route-guards/RequireSignin.tsx";
 import { AuthProvider } from "./contexts/auth.tsx";
 import Event from "./routes/Event.tsx";
+import EventGallery from "./routes/EventGallery.tsx";
+import EventAdminGallery from "./routes/EventAdminGallery.tsx";
+import RequireAdmin from "./components/route-guards/RequireAdmin.tsx";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +36,22 @@ const router = createBrowserRouter([
       {
         path: "/events/:eventId",
         element: <Event />,
+      },
+      {
+        path: "/events/:eventId/gallery",
+        element: (
+          <RequireSignin>
+            <EventGallery />
+          </RequireSignin>
+        ),
+      },
+      {
+        path: "/events/:eventId/admin/gallery",
+        element: (
+          <RequireAdmin>
+            <EventAdminGallery />
+          </RequireAdmin>
+        ),
       },
     ],
   },
