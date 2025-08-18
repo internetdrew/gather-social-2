@@ -22,7 +22,11 @@ const EventWelcomeUserActions = ({ eventId }: { eventId: string }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      {isMember ? <ImageUploader /> : <EventPasscodeForm eventId={eventId} />}
+      {isMember ? (
+        <ImageUploader eventId={eventId} />
+      ) : (
+        <EventPasscodeForm eventId={eventId} />
+      )}
     </div>
   );
 };
