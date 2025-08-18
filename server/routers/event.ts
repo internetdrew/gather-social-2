@@ -227,4 +227,30 @@ export const eventRouter = router({
 
       return eventImages;
     }),
+  getAllImages: protectedProcedure
+    .input(z.object({ eventId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { eventId } = input;
+      const { data, error } = await supabaseAdminClient
+        .from("event_images")
+        .select("*")
+        .eq("event_id", eventId)
+        .eq("uploaded_by", ctx.user.id);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+
+      const imagesWithUrls = data.map((img) => ({
+        ...img,
+        url: supabaseAdminClient.storage
+          .from("event_images")
+          .getPublicUrl(img.storage_path).data.publicUrl,
+      }));
+
+      return imagesWithUrls;
+    }),
 });
