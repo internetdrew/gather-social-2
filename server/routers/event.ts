@@ -229,13 +229,12 @@ export const eventRouter = router({
     }),
   getAllImages: protectedProcedure
     .input(z.object({ eventId: z.string() }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       const { eventId } = input;
       const { data, error } = await supabaseAdminClient
         .from("event_images")
         .select("*")
-        .eq("event_id", eventId)
-        .eq("uploaded_by", ctx.user.id);
+        .eq("event_id", eventId);
 
       if (error) {
         throw new TRPCError({
