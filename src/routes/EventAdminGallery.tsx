@@ -1,17 +1,13 @@
-import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 import { RowsPhotoAlbum } from "react-photo-album";
 import "react-photo-album/rows.css";
+import { useResponsiveImages } from "@/hooks/useResponsiveImages";
 
 const EventAdminGallery = () => {
   const { eventId } = useParams();
 
-  const { data, isLoading, error } = useQuery(
-    trpc.event.getAllImages.queryOptions(
-      { eventId: eventId ?? "" },
-      { enabled: !!eventId },
-    ),
+  const { containerRef, photos, isLoading, error } = useResponsiveImages(
+    eventId ?? "",
   );
 
   if (isLoading) {
@@ -22,17 +18,10 @@ const EventAdminGallery = () => {
     return <div>Error loading images: {error.message}</div>;
   }
 
-  const photosToRender = data?.map(({ id, url, width, height }) => ({
-    id,
-    src: url,
-    width,
-    height,
-  }));
-
   return (
-    <div className="px-4">
-      {photosToRender && photosToRender.length > 0 ? (
-        <RowsPhotoAlbum targetRowHeight={250} photos={photosToRender} />
+    <div ref={containerRef} className="mx-4">
+      {photos && photos.length > 0 ? (
+        <RowsPhotoAlbum targetRowHeight={200} photos={photos} />
       ) : (
         <div className="text-muted-foreground text-center">
           <p className="mt-28">No images have been added for this event yet.</p>
