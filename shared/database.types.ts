@@ -18,23 +18,29 @@ export type Database = {
         Row: {
           created_at: string
           event_id: string
+          height: number
           id: string
           storage_path: string
           uploaded_by: string
+          width: number
         }
         Insert: {
           created_at?: string
           event_id: string
+          height?: number
           id?: string
           storage_path: string
           uploaded_by: string
+          width?: number
         }
         Update: {
           created_at?: string
           event_id?: string
+          height?: number
           id?: string
           storage_path?: string
           uploaded_by?: string
+          width?: number
         }
         Relationships: [
           {

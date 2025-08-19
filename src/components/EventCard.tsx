@@ -99,7 +99,7 @@ const EventCardCTA = ({
 
   return event.status === "ACTIVE" ? (
     <Button size="sm" className="text-xs" asChild>
-      <Link to={`/events/${event.id}`}>Visit Gallery</Link>
+      <Link to={`/events/${event.id}/admin/gallery`}>Visit Gallery</Link>
     </Button>
   ) : (
     <Button

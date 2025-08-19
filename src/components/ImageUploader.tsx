@@ -19,6 +19,14 @@ import { useMutation } from "@tanstack/react-query";
 import { trpc } from "@/utils/trpc";
 import { Progress } from "./ui/progress";
 import { toast } from "sonner";
+import { getImageDimensions } from "@/utils/image/getImageDimensions";
+import { uploadWithProgress } from "@/utils/image/uploadWithProgress";
+
+type FileWithPreviewAndDimensions = File & {
+  preview: string;
+  width: number;
+  height: number;
+};
 
 function combinedValidator(file: File) {
   const sizeError = fileSizeValidator(file);
@@ -40,57 +48,29 @@ const formSchema = z.object({
 const ImageUploader = ({ eventId }: { eventId: string }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [progresses, setProgresses] = useState<number[]>([]);
-  const [files, setFiles] = useState<Array<File & { preview: string }>>([]);
+  const [files, setFiles] = useState<Array<FileWithPreviewAndDimensions>>([]);
+
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     accept: ACCEPTED_TYPES.reduce((acc, type) => ({ ...acc, [type]: [] }), {}),
     maxFiles: MAX_FILE_COUNT,
     onDrop: async (acceptedFiles) => {
       const convertedFiles = await processImageFiles(acceptedFiles);
-      const filesWithPreview = convertedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
+
+      const withPreviewAndDimensions = await Promise.all(
+        convertedFiles.map(async (file) => {
+          const preview = URL.createObjectURL(file);
+          const { width, height } = await getImageDimensions(preview);
+          return Object.assign(file, { preview, width, height });
         }),
       );
-      setFiles(
-        acceptedFiles.map((file) => ({
-          ...file,
-          preview: URL.createObjectURL(file),
-        })),
-      );
-      form.setValue("files", filesWithPreview, { shouldValidate: true });
+
+      setFiles(withPreviewAndDimensions);
+      form.setValue("files", withPreviewAndDimensions, {
+        shouldValidate: true,
+      });
     },
     validator: combinedValidator,
   });
-
-  function uploadWithProgress(url: string, file: File, index: number) {
-    return new Promise<void>((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("PUT", url);
-      xhr.setRequestHeader("Content-Type", file.type);
-
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100);
-          setProgresses((prev) => {
-            const copy = [...prev];
-            copy[index] = percent;
-            return copy;
-          });
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) resolve();
-        else {
-          reject(new Error(`Upload failed with status ${xhr.status}`));
-        }
-      };
-
-      xhr.onerror = () => reject(new Error("Upload error"));
-
-      xhr.send(file);
-    });
-  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -109,7 +89,7 @@ const ImageUploader = ({ eventId }: { eventId: string }) => {
     try {
       const { signedUrls } = await getSignedUrlsMutation.mutateAsync({
         eventId,
-        files: values.files.map((file) => ({
+        files: files.map((file) => ({
           name: file.name,
           size: file.size,
           type: file.type,
@@ -118,14 +98,21 @@ const ImageUploader = ({ eventId }: { eventId: string }) => {
 
       await Promise.all(
         signedUrls.map(({ signedUrl }, i) =>
-          uploadWithProgress(signedUrl, values.files[i], i),
+          uploadWithProgress({
+            url: signedUrl,
+            file: values.files[i],
+            index: i,
+            setProgresses,
+          }),
         ),
       );
 
       await addImagesMutation.mutateAsync({
         eventId,
-        images: signedUrls.map((s) => ({
+        images: signedUrls.map((s, i) => ({
           filepath: s.path,
+          width: files[i].width,
+          height: files[i].height,
         })),
       });
 
@@ -138,9 +125,8 @@ const ImageUploader = ({ eventId }: { eventId: string }) => {
           ? "Your photo was uploaded successfully!"
           : `Your ${files.length} photos were uploaded successfully!`,
         {
-          duration: 10000,
-          description:
-            "Your photos have been uploaded and the host will see them. If they make a public gallery, your photos might be displayed there.",
+          duration: 8000,
+          description: `Your ${files.length === 1 ? "photo has" : "photos have"} been uploaded and the host will see ${files.length === 1 ? "it" : "them"}. If they make a public gallery, your ${files.length === 1 ? "photo" : "photos"} might be displayed there.`,
         },
       );
     } catch (err) {

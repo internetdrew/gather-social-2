@@ -2,6 +2,7 @@ import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { supabaseAdminClient } from "../supabase";
+import type { Photo } from "react-photo-album";
 
 export const eventRouter = router({
   create: protectedProcedure
@@ -200,6 +201,8 @@ export const eventRouter = router({
         images: z.array(
           z.object({
             filepath: z.string(),
+            width: z.number(),
+            height: z.number(),
           }),
         ),
       }),
@@ -214,6 +217,8 @@ export const eventRouter = router({
               event_id: eventId,
               storage_path: image.filepath,
               uploaded_by: ctx.user.id,
+              width: image.width,
+              height: image.height,
             })),
           )
           .select();
@@ -226,5 +231,36 @@ export const eventRouter = router({
       }
 
       return eventImages;
+    }),
+  getAllImages: protectedProcedure
+    .input(z.object({ eventId: z.string(), width: z.number().optional() }))
+    .query(async ({ input }) => {
+      const { eventId } = input;
+      const { data, error } = await supabaseAdminClient
+        .from("event_images")
+        .select("*")
+        .eq("event_id", eventId);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+
+      const photos: Photo[] = data.map(
+        ({ storage_path, width, height, id }) => {
+          return {
+            src: supabaseAdminClient.storage
+              .from("images")
+              .getPublicUrl(storage_path).data.publicUrl,
+            width,
+            height,
+            key: id,
+          };
+        },
+      );
+
+      return photos;
     }),
 });
