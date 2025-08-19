@@ -200,6 +200,8 @@ export const eventRouter = router({
         images: z.array(
           z.object({
             filepath: z.string(),
+            width: z.number(),
+            height: z.number(),
           }),
         ),
       }),
@@ -214,6 +216,8 @@ export const eventRouter = router({
               event_id: eventId,
               storage_path: image.filepath,
               uploaded_by: ctx.user.id,
+              width: image.width,
+              height: image.height,
             })),
           )
           .select();
@@ -243,11 +247,11 @@ export const eventRouter = router({
         });
       }
 
-      const imagesWithUrls = data.map((img) => ({
-        ...img,
+      const imagesWithUrls = data.map(({ storage_path, ...rest }) => ({
+        ...rest,
         url: supabaseAdminClient.storage
           .from("images")
-          .getPublicUrl(img.storage_path).data.publicUrl,
+          .getPublicUrl(storage_path).data.publicUrl,
       }));
 
       return imagesWithUrls;
