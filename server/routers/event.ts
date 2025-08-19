@@ -235,7 +235,7 @@ export const eventRouter = router({
   getAllImages: protectedProcedure
     .input(z.object({ eventId: z.string(), width: z.number().optional() }))
     .query(async ({ input }) => {
-      const { eventId, width } = input;
+      const { eventId } = input;
       const { data, error } = await supabaseAdminClient
         .from("event_images")
         .select("*")
@@ -249,17 +249,13 @@ export const eventRouter = router({
       }
 
       const photos: Photo[] = data.map(
-        ({ storage_path, width: w, height: h, id }) => {
-          const transformedWidth = width && width < w ? width : w;
-
+        ({ storage_path, width, height, id }) => {
           return {
             src: supabaseAdminClient.storage
               .from("images")
-              .getPublicUrl(storage_path, {
-                transform: { width: transformedWidth },
-              }).data.publicUrl,
-            width: w,
-            height: h,
+              .getPublicUrl(storage_path).data.publicUrl,
+            width,
+            height,
             key: id,
           };
         },
