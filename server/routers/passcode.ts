@@ -2,7 +2,6 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { supabaseAdminClient } from "../supabase";
 import { TRPCError } from "@trpc/server";
-import { nanoid } from "nanoid";
 import bcrypt from "bcrypt";
 
 export const passcodeRouter = router({
@@ -15,6 +14,7 @@ export const passcodeRouter = router({
     .mutation(async ({ input }) => {
       const { eventId } = input;
 
+      const { nanoid } = await import("nanoid");
       const saltRounds = 10;
       const plainCode = nanoid(8);
       const salt = bcrypt.genSaltSync(saltRounds);
