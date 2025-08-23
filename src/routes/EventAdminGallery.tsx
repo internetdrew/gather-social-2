@@ -7,6 +7,7 @@ import { useState } from "react";
 import type { Photo } from "react-photo-album";
 import { useQuery } from "@tanstack/react-query";
 import { trpc } from "@/utils/trpc";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const EventAdminGallery = () => {
   const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
@@ -24,7 +25,13 @@ const EventAdminGallery = () => {
   );
 
   if (isLoading) {
-    return <div>Loading images...</div>;
+    return (
+      <div className="mx-4 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+        {Array.from({ length: 10 }, (_, i) => (
+          <Skeleton key={i} className="h-48 w-full rounded-md" />
+        ))}
+      </div>
+    );
   }
 
   if (error) {
