@@ -11,7 +11,7 @@ import { AuthProvider } from "./contexts/auth.tsx";
 import Event from "./routes/Event.tsx";
 import EventGallery from "./routes/EventGallery.tsx";
 import EventAdminGallery from "./routes/EventAdminGallery.tsx";
-import RequireAdmin from "./components/route-guards/RequireAdmin.tsx";
+import AdminRouteGuard from "./components/route-guards/AdminRouteGuard.tsx";
 
 const router = createBrowserRouter([
   {
@@ -46,12 +46,14 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/events/:eventId/admin/gallery",
-        element: (
-          <RequireAdmin>
-            <EventAdminGallery />
-          </RequireAdmin>
-        ),
+        path: "/events/:eventId/admin",
+        element: <AdminRouteGuard />,
+        children: [
+          {
+            path: "gallery",
+            element: <EventAdminGallery />,
+          },
+        ],
       },
     ],
   },
